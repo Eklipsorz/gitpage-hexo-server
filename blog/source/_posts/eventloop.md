@@ -1,8 +1,14 @@
 ---
 title: Event loop 與 在JavaScript中的它
 date: 2021-11-14 15:29:12
-tags:
- - JavaScript
+tags: 
+  - event loop
+  - single thread
+  - node.js
+  - event 
+categories:
+  - JavaScript
+  - Computer Science
 ---
 
 ## JavaScript 背景

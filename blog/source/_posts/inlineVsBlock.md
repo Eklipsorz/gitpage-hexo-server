@@ -2,9 +2,9 @@
 title: Inline element VS. Block element
 date: 2021-08-11 23:31:19
 tags:
- - HTML
+ - DOM
 categories: 
- - Website Development
+ - HTML
 ---
 ## inline element
 容器會以實際容器所存的內容為主且不會特別佔據沒顯示內容的區塊而將容器特別獨立開來，以此特性會讓該容器能夠與其他容器在同一行內呈現，而inline element就是由此而得名。

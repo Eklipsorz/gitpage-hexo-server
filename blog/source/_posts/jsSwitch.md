@@ -1,7 +1,10 @@
 ---
 title: JavaScript - Switch 使用方式
 date: 2021-07-25 23:18:24
-tags: JavaScript
+tags:
+  - switch
+categoires: 
+  - JavaScript
 mathjax: true
 ---
 

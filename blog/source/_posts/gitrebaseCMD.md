@@ -1,10 +1,9 @@
 ---
 title: git rebase && undo rebase
 tags:
-  - git
   - rebase
 categories:
-  - 深入淺出
+  - git
 date: 2021-09-29 14:41:21
 ---
 

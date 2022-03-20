@@ -2,6 +2,8 @@
 title: 縮排會構成文字節點
 tags:
   - DOM
+categories:
+  - HTML
 date: 2021-10-03 23:45:21
 ---
 

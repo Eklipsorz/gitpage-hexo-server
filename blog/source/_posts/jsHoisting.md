@@ -1,7 +1,10 @@
 ---
 title: JavaScript - Hoisting簡介
 date: 2021-07-28 02:30:23
-tags: JavaScript
+tags: 
+  - hoisting
+categoires:
+  - JavaScript
 ---
 
 

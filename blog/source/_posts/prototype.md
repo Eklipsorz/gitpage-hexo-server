@@ -2,8 +2,10 @@
 title: JavaScript 的 prototype 簡介
 date: 2021-11-27 20:24:48
 tags:
- - JavaScript
  - prototype
+ - class
+categoires:
+ - JavaScript
 ---
 
 ## object oriented language

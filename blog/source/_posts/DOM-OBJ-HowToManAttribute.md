@@ -1,9 +1,10 @@
 ---
 title: DOM - How To Manipulate Attribute From Object
 tags:
-  - HTML
+  - DOM
 categories:
-  - Website Development
+  - HTML
+  - JavaScript
 date: 2021-08-28 22:00:44
 ---
 

@@ -2,6 +2,9 @@
 title: HTML屬性 VS. 物件屬性
 tags:
   - DOM
+categories:
+  - HTML
+  - JavaScript
 date: 2021-10-03 22:12:40
 ---
 

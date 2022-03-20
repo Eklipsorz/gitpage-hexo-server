@@ -1,7 +1,10 @@
 ---
 title: JavaScript - This 變數
 date: 2021-07-30 00:38:50
-tags: JavaScript
+tags: 
+  - this
+categories:
+  - JavaScript
 ---
 
 

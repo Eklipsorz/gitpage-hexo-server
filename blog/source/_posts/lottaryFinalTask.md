@@ -1,9 +1,9 @@
 ---
 title: Simulate a Lottary game
 tags:
-- JavaScript
+  - lottary
 categories:
-- Website Development
+  - Website Development
 date: 2021-09-07 21:19:17
 ---
 

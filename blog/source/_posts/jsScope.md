@@ -1,8 +1,9 @@
 ---
 title: JavaScript - Scope 簡介
 tags:
-  - JavaScript
   - Scope
+categories:
+  - JavaScript
 date: 2021-09-09 17:47:19
 ---
 

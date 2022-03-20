@@ -1,7 +1,10 @@
 ---
 title: JavaScript - Loop 結構
 date: 2021-07-26 00:34:06
-tags: JavaScript
+tags: 
+  - loop
+categories:
+  - JavaScript
 ---
 
 

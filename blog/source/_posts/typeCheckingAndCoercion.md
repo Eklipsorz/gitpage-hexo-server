@@ -1,6 +1,8 @@
 ---
 title: JS - 型別檢查與隱性轉換
 tags:
+  - type check
+categories:
   - JavaScript
 date: 2021-09-10 00:33:37
 ---
