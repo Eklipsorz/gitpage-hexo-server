@@ -26,11 +26,29 @@ categories:
   - 接著使用A1使用API來指定與Host B的B1進行連接，並且當連接建立完畢後，接著透過API來將傳遞內容寫入至Socket A1這檔案，Host A上的作業系統會利用封裝後的底層資訊來將檔案內容傳遞至Host B的Socket B1上，並通知該Host B的作業系統去讀取Socket B1，接著Host B的作業系統收到通知就會讀取Socket B1並將內容轉換給Application B1上。
   ![](https://res.cloudinary.com/dqfxgtyoi/image/upload/v1647831617/blog/network/OSI/send-receive-data-inside-socket-example_ypmu7m.png)
 6. 參考資料：
-[What exactly is Socket](https://stackoverflow.com/questions/16233193/what-exactly-is-socket)
-[A TCP/IP Refeerence You Can Understand](http://www.tcpipguide.com/free/t_SessionLayerLayer5.htm)
+- [What exactly is Socket](https://stackoverflow.com/questions/16233193/what-exactly-is-socket)
+- [A TCP/IP Refeerence You Can Understand](http://www.tcpipguide.com/free/t_SessionLayerLayer5.htm)
+- [socket编程到底是什么？](https://www.zhihu.com/question/29637351)
 
-window size 是什麼？做什麼用？
-sequence number是什麼？
+### ACK? SYN?
+ACK 和 SYN 源自於TCP/IP四層的傳輸層
+
+### window size 是什麼？做什麼用？
+
+1. 出自於TCP/IP 四層中的傳輸層 Header，主要用途為宣告接收者在特定時間點所能接收到的資料大小
+2. 當主機A的封包1會從傳輸層封裝至實體層並傳送至另一個主機B時，其封包1若指定TCP/IP Header中的window size為size A：
+  - 那麼當主機B收到封包1時，會從window size讀取到size A，進而指定下一次傳遞封包給主機A的封包大小為size A
+  - 當主機B傳遞封包2至主機A時，就會按照size A來製作符合其大小的封包傳遞至主機A，另外主機B所傳遞的封包2也指定著window size為size B
+  - 當主機A從主機B收取封包時，會從Header讀取到size B，這指定下一次傳遞給主機B的封包大小會是size B。
+![](https://res.cloudinary.com/dqfxgtyoi/image/upload/v1647839246/blog/network/OSI/window-size-diag_ypolsp.png)
+
+
+3. 參考資料
+ - [What is the window size in TCP?](https://www.quora.com/What-is-the-window-size-in-TCP)
+ - [TCP series #4: TCP receive window and everything you need to know about it](https://accedian.com/blog/tcp-receive-window-everything-need-know/)
+ - [tcp傳輸窗口解析——藉助wireshark深入分析](https://kknews.cc/zh-tw/news/8ge5n9q.html)
+
+### sequence number是什麼？
 什麼是連線？
 什麼是握手？
 四次斷開？
