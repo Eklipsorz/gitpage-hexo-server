@@ -31,7 +31,7 @@ categories:
 - [socket编程到底是什么？](https://www.zhihu.com/question/29637351)
 
 ### Sequence number 是什麼？
-1. 出自於TCP/IP 傳輸層的Sequence number，主要用途為藉由賦予連續號碼至每個所傳遞的封包來對封包進行排序、去除重複性(eliminate duplicates)或者讓每個封包都有各自的序號
+1. 出自於TCP/IP 傳輸層的Sequence number，主要用途為藉由賦予連續號碼至每個所傳遞的封包來對封包進行排序、去除重複性(eliminate duplicates)或者讓每個封包都有各自的序號，來與ACK一同方便驗證封包傳遞的可靠性、驗證資料是否因封包丟失而不完整
 2. 細節：
   - Sequence number並不是TCP/IP的識別號碼
   - Sequence number並不代表會如同資料庫的主鍵號碼那樣：每個封包要擁有不同號碼，被使用過的號碼就不能夠重複使用
@@ -67,18 +67,67 @@ categories:
  - [tcp傳輸窗口解析——藉助wireshark深入分析](https://kknews.cc/zh-tw/news/8ge5n9q.html)
 
 
-## 什麼是連線？
-根據[RFC 793 - Transmission Control Protocol ](https://tools.ietf.org/html/rfc793)以及[为什么 TCP 建立连接需要三次握手](https://draveness.me/whys-the-design-tcp-three-way-handshake/)所提出的連線定義為，連線會是由序號、視窗大小、socket pair所構成。
+### 什麼是連線？
+1. 根據[RFC 793 - Transmission Control Protocol ](https://tools.ietf.org/html/rfc793)以及[为什么 TCP 建立连接需要三次握手](https://draveness.me/whys-the-design-tcp-three-way-handshake/)所提出的連線定義為，連線會是由序號、視窗大小、一對sockets所構成。
 
 > The reliability and flow control mechanisms described above require that TCPs initialize and maintain certain status information for each data stream. The combination of this information, including sockets, sequence numbers, and window sizes, is called a connection.
 
+2. 連線目的為何？ 主要確保正式傳輸前後的時期是分別能夠保證以及驗證資料傳輸的可靠性 以及 實作傳輸過程的流量控制
+  - 正式傳輸前的可靠特性： 傳輸前的連線目的是讓雙方的資料傳遞都是可以成功傳遞訊息至對方/能成功接收到對訊息，接著進而產生對應的資料來代表連線
+  - 正式傳輸後的可靠特性：傳輸後的目的可透過代表連線的資料來幫助驗證後續的資料傳遞是否為合法*
+  - 流量控制：
+
+3. 連線中的資料各代表著：
+  - 序號、一對sockets：保證可靠性
+  - 視窗大小(Window Size)：流量控制
+
+### http 協定特定-無連接(Connectionless)
+1. Connection 是指http協定下的客戶端和伺服器端為了確保資料傳遞能夠成功傳遞至對方/接收對方訊息而建立的資訊和初次傳遞的可靠性驗證，資訊則是用驗證往後傳遞是否可靠，
+
+2. Connectionless的less則是表示著Connection在某方面的程度或者數量較少，甚至到沒有Connection，在這裡的某方面程度則是指連線持續時間方面或者拿來驗證可靠性的資料持續存在時間，所以連線持續時間較短/資料持續存放時間較短或者甚至到沒有，都可稱作為Connectionless或者無連接。
+
+
+3. http協定的無連接特性是出自於當時概念背景是： **早期向伺服器發送的請求都因為索取的資料較小而具有同個客戶端不連續發送同個連線的請求，會隔一段時間發送的特性，所以當伺服器面對巨大請求量時，往往請求都會因為前面特性而發散，使得連續的請求們都不是從同一個連線中發送**，為了讓伺服器能夠服務更多請求，所以該協定以連線持續較短的連線為目標來解決，
+
+4. 在第三點提出的背景下，http協定下的無連接實作概念為：每一次連接都只處理一個請求，當伺服器處理完一個客戶請求並回傳結果給客戶端，接著等客戶端回應它已收到回應的訊息給伺服器或者不等，此時伺服器和客戶端就相互刪除代表連線的資訊以此來中斷連線，使連線成為連線持續較短的連線
+
+5. 現如今的背景-**會因為連續數量請求的頻繁出現而使http協定下的無連接實作概念變成累贅**：隨著時間的推移，每一個請求不再只是索求大小較小的資源，而是會因為所要的資源太大，而必須將請求或者回應分割好幾份小請求或小回應來發送或者回應，然而每當小回應回傳客戶端時，可能會因為無連線的規則而斷開連線，但由於請求/回應還未完全做完，所以又會為了發送請求或者接收回應而再次讓客戶端和伺服器建立連線，並重新接收，然後回應完又斷開，然後再繼續建立連線的迴圈，讓連線建立的成本逐漸成了累贅，甚至進而使得在巨大的請求量中，連續的請求們會出現較多為同一個連線的情況。
+
+6. 為了解決上述問題而提出的解法：提出了Keep-Alive機制在HTTP的實作上，來讓連線的持續時間延長至伺服器或者客戶端本身認為傳送/接收過程已經結束才停止連線，換言之，由他們(伺服器和客戶端的其中一方)決定何時中斷連線，在Keep-Alive的情況下，每個請求所建立的連線會延長，這可以盡可能緩解原本需要一直重複建立連線的傳送/回應的過程，但由於連線延長，所以容易讓連線本身佔據著系統資源。
+
+7. 其餘細節：
+  - 這裡的無連線通常形容著網路協議(Protocol)，也就是無連線協議，而無連線協議只是不會維持連線時間較長的連線，也並非沒能力提供連線時間較長的連線。
+
+### 重複歷史連接初始化是什麼？
+當客戶端對伺服器進行資料傳輸，剛開始若沒有對方的連接資訊的話，會向伺服器來申請初次連接資料的請求，然而客戶端發送出去的請求很有可能因為網路速率問題、系統問題而導致客戶端發送出多次重複性的請求，且客戶端無法直接撤回這些處於網路環境下的請求，而這些請求正是重複歷史連接初始化。
+
+### 連接狀態
+為了進一步讓主機了解該主機與其他主機下的連接情況，RFC793文件就定義了一系列狀態來表示目前連接處於哪種狀況並允許作業系統根據這些狀態來表達自己與其他連接的狀況，具體狀態有：
+  - LISTEN
+  - SYN-SENT
+  - SYN-RECEIVED
+  - ESTABLISHED
+  - CLOSED
+
+參考資料：
+  - [TCP/IP State Transition Diagram (RFC793)](https://users.cs.northwestern.edu/~agupta/cs340/project2/TCPIP_State_Transition_Diagram.pdf)
+  - [RFC 793 - Transmission Control Protocol ](https://tools.ietf.org/html/rfc793)
+## 正文
+### 三向交握的目的
+根據[RFC 793 - Transmission Control Protocol ](https://tools.ietf.org/html/rfc793)所定義的三向交握，其提出的原因為如下：
+  - 客戶端在向伺服器發出初次申請連接請求的時候，因為速率或網路問題而發送出多個相同請求
+為了避免相同請求的發生，而提出三向交握這特定的連接建立方法來解決
+
+> The principle reason for the three-way handshake is to prevent old duplicate connection initiations from causing confusion.
+
+
+
+
 什麼是握手？
 四次斷開？
-http協定特性
+
 tcp 三次握手侷限於於特定協定？
-哪些資訊是定義可靠性
-哪些資訊是定義流控制機制
-重複歷史連接是什麼？
+
 
 
  - [what is connection](https://datatracker.ietf.org/doc/html/rfc793)
