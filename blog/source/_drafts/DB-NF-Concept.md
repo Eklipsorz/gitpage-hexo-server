@@ -6,7 +6,14 @@ tags:
 # 從第一正規化數到第三正規化
 
 ## 正規化是什麼？
-Normalize 使某個事物回歸至它原本正常的狀態或者它常出現的狀態，Normalization是指回歸至正常或者常態的過程/動作，正常或者常出現的狀態會基於設定者來定義
+1. Normalize 使某個事物回歸至它原本正常的狀態或者它常出現的狀態
+2. Normalization是指回歸至正常或者常態的過程/動作
+3. 前兩者提到的正規化所指的正常或者常出現的狀態會基於設定者來定義
+4. 在資料庫當中，為了避免當資料庫執行CRUD時所發生的異常-即資料冗余、資料不一致、刪除夾帶其他代表某事物之資訊的資料等，而定義出：
+  - 哪一種表格形式可以讓資料庫系統避免上述問題的正規形式(Normal Form)
+  - 如何從擁有異常現象的表格轉換為對應的正規形式，而這種轉換稱之為Normalizeation
+5. 由於完整正規形式所需要做的處理成本過於沈重，而將完整正規形式依據處理成本以及嚴格性而分成第一正規化、第二正規化、第三正規化、BCNF、第四正規化、第五正規化、第六正規化等等正規化等級，在這裏普遍只會到第一至三正規化。
+6. 除了第一正規化以外，每一個正規化都必須遵守前一個正規化的需求，且**每一個正規化都有對應的正規形式以及如何轉換成正規形式的方法**。
 
 ## 解決了什麼？
 
@@ -23,9 +30,9 @@ Normalize 使某個事物回歸至它原本正常的狀態或者它常出現的�
 2. Redundancy 是指冗餘、多餘的程度/狀況，而Data Redundancy是指資料本身會出現的冗餘狀況，比如出現同一個場合出現重複或類似的資料。
 > Redundancy：The quality or state of being redundant
 3. 由於 Data Redundancy 是出現在資料本身的冗餘狀況，所以涉及到資料的資料庫系統也會出現Data Redundancyg的問題，比如：
-  - 在同一個表格下的每一個紀錄下之同一個欄位值出現多筆資料，比如說某個紀錄下的欄位值出現多個資料
-  - 在同一個表格下的單一屬性本身是由多個屬性組合而成，比如地址屬性可以包含縣市、街道、州郡、國家等這些屬性
-  - 同個欄位重複出現在多個表格
+  - 在同一個表格下存在著多筆紀錄是重複的
+  - 在同一個表格下有筆紀錄欄位是重複存在多個值。
+  - 同個欄位重複出現在多個表格。
 > While different in nature, data redundancy also occurs in database systems that have values repeated unnecessarily in one or more records or fields, within a table, or where the field is replicated/repeated in two or more tables. 
 4. Data Redundancy 會造成的缺失有：
   - 浪費資料庫的儲存空間去存放重複性的資料
@@ -34,7 +41,7 @@ Normalize 使某個事物回歸至它原本正常的狀態或者它常出現的�
 ## Data consistency
 1. 意指相同資料在不同地方是否能夠匹配到相同的結果
 >  refers to whether the same data kept at different places do or do not match.
-2. 在關聯式資料庫是指在同一個關係R中，相同的屬性集合A是否能夠匹配相同對應的屬性集合B，若出現相同的屬性集合A匹配到不相同的對應屬性集合B，代表其Data consistency就很差，反之，若同一個關係R，每個紀錄都能透過相同的屬性集合A來對應相同的對應屬性集合B，代表Data consistency就很好
+2. 在關聯式資料庫中，是指同一個關係R上相同的屬性集合A是否能夠匹配相同對應的屬性集合B，若出現相同的屬性集合A匹配到不相同的對應屬性集合B，代表其Data consistency就很差，反之，若同一個關係R，每個紀錄都能透過相同的屬性集合A來對應相同的對應屬性集合B，代表Data consistency就很好
 3. Data consistency若太差的話，很容易在資料處理上的CRUD出現異常情況。
 
 ### 異常(anomaly)
@@ -51,7 +58,7 @@ Normalize 使某個事物回歸至它原本正常的狀態或者它常出現的�
 3. 刪除時異常 (Deletion Anomalies)： 當對表格X的某紀錄進行Delete操作，也就是刪除表格X的某筆紀錄之內容所會發生的異常
   - 當紀錄一被刪除時，可能會帶刪除定義其他事物的欄位資訊：當對表格X的某份紀錄進行Delete操作時，若這份紀錄的部分欄位內容是能單獨定義某些事物Y(如能夠定義餐廳的欄位)，從定義事物Y來說的話，只要這些欄位隨著紀錄被刪除而刪去的話，那麼就無從定義事物Y。比如說當要刪去演員為Vivien Leigh的紀錄時，會連帶刪除它夾帶的電影資訊-Gone With the Wind。
   ![](https://res.cloudinary.com/dqfxgtyoi/image/upload/v1648988727/blog/database/NF/delete-anomaly-example1_q8isex.png)
-  
+
 异常（anomaly)
 确保数据之间的依赖关系是合乎逻辑的：
   - 
