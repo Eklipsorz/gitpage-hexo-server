@@ -40,11 +40,14 @@ Normalize 使某個事物回歸至它原本正常的狀態或者它常出現的�
 ### 異常(anomaly)
 當資料存放至表格X並對表格X進行CRUD中的CUD時，總是會發生以下異常：
 1. 插入時異常 (Insert Anomalies)：當對表格X進行Create操作，也就是插入新紀錄至表格X所會有的異常
-  - 紀錄冗余：當插入新紀錄至表格X時，新紀錄部分欄位內容會與表格X的舊紀錄部分欄位內容重複，從定義重複欄位內容的角度來看整體，等同表格X儲存多餘/冗余的資料，拿下面電影案例來說，當為了Star wars插入新的演員紀錄至movies時，該演員紀錄又夾帶著movies所擁有的相同電影資料，以定義電影來說，這份表格所儲存的star wars資訊是多餘的。
+  - 紀錄冗余：當插入新紀錄至表格X時，新紀錄部分欄位內容會與表格X的舊紀錄部分欄位內容重複，且這些欄位能夠單獨定義某些事物Y(如能夠定義餐廳的欄位)，從定義事物Y的角度來這些紀錄，等同表格X儲存多餘/冗余的資料，拿下面電影案例來說，當為了Star wars插入新的演員紀錄至movies時，該演員紀錄又夾帶著movies所擁有的相同電影資料，以定義電影來說，這份表格所儲存的star wars資訊是多餘的。
   ![](https://res.cloudinary.com/dqfxgtyoi/image/upload/v1648979225/blog/database/NF/insert-anomaly-example1_odbotx.png)
   - 新紀錄的欄位內容缺失：當插入新紀錄至表格X時，新紀錄部分欄位內容會是空的，對於資料庫系統來說，無法透過透過該欄位進行特定資料的存取，所以為了解決這點，資料庫系統會只允許欄位都有填寫的紀錄新增至表格。這造就兩類問題：一類是允許為空但會使資料庫系統無法透過該欄位做太多運用，另一類則是不允許為空但這樣就無法紀錄該資訊。
   ![](https://res.cloudinary.com/dqfxgtyoi/image/upload/v1648979225/blog/database/NF/insert-anomaly-example2_dti3qp.png)
-2. 更新時異常 (Update Anomalies)：
+
+2. 更新時異常 (Update Anomalies)： 當對表格X進行Update操作，也就是變更表格X的某筆紀錄之內容所會發生的異常
+  - 更新後的資料不一致問題：當對表格X的某份紀錄進行Update操作時，若這份紀錄的部分欄位內容是存在多筆紀錄上的話，且這些欄位能夠單獨定義某些事物Y(如能夠定義餐廳的欄位)，從定義事物Y來說的話，這些定義著Y的紀錄會出現定義資訊不一致的問題，如定義同個電影的紀錄有兩筆，但經過修改後，現在同個電影出現兩個不同的電影種類：SciFi和Drama
+  ![](https://res.cloudinary.com/dqfxgtyoi/image/upload/v1648980582/blog/database/NF/update-anomaly-example1_azdu1t.png)
 3. 刪除時異常 (Deletion Anomalies)：
 
 
