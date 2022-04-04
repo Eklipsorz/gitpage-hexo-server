@@ -45,16 +45,28 @@ tags:
 ![](https://res.cloudinary.com/dqfxgtyoi/image/upload/v1648988727/blog/database/NF/delete-anomaly-example1_q8isex.png)
 
 https://liuzhian.github.io/2018/11/15/数据库-正规化/
-## Data redundancy 
-1. Redundant 中文為冗餘、多餘的，主要是強調某事物在某些場合是以非必要的形式重複出現
-> Redundant：exceeding what is necessary or normal、characterized by similarity or repetition
-2. Redundancy 是指冗餘、多餘的程度/狀況，而Data Redundancy是指資料本身會出現的冗餘狀況，比如出現同一個場合出現重複或類似的資料。
-> Redundancy：The quality or state of being redundant
-3. 由於 Data Redundancy 是出現在資料本身的冗餘狀況，所以涉及到資料的資料庫系統也會出現Data Redundancyg的問題，比如：
+
+## 總結：異常
+從對資料庫的紀錄所做出的CRUD操作衍生出的異常案例來看，可以大致將異常分成資料冗余(Data Redundancy)、資料本身的完整性異常(包含資料一致性、刪除metadata導致永久失去潛藏的紀錄)
+
+### Data Redundancy 
+資料冗餘是指資料紀錄本身的冗餘、重複情況，冗餘是指毫無意義的資料內容，而重複是指資料紀錄內容在其他紀錄內容是一樣的，在
+涉及到資料的資料庫中，常見的情況會有：
   - 在同一個表格下存在著多筆紀錄是重複的
   - 在同一個表格下有筆紀錄欄位是重複存在多個值。
   - 同個欄位重複出現在多個表格。
 > While different in nature, data redundancy also occurs in database systems that have values repeated unnecessarily in one or more records or fields, within a table, or where the field is replicated/repeated in two or more tables. 
+
+這項問題可能會帶來以下負面影響：
+ - 資料上的不一致：相同資料在不同地方不能夠匹配到相同的結果
+ - 多浪費資料的儲存空間去存放重複、冗余的資料：同一欄位儲存多個值、同一列儲存過多的欄位值(如拿欄位數量來儲存自己不喜歡的食物，而自己不喜歡的食物數是無限，所以欄位數勢必會是無限)、儲存無法匹配的冗余資訊
+
+1. Redundant 中文為冗餘、多餘的，主要是強調某事物在某些場合是以非必要的形式重複出現
+> Redundant：exceeding what is necessary or normal、characterized by similarity or repetition
+2. Redundancy 是指冗餘、多餘的程度/狀況，而Data Redundancy是指資料本身會出現的冗餘狀況，比如出現同一個場合出現重複或類似的資料。
+> Redundancy：The quality or state of being redundant
+
+
 4. Data Redundancy 會造成的缺失有：
   - 浪費資料庫的儲存空間去存放重複性的資料
   - 資料過於繁雜而產生資料維護上的問題
@@ -70,6 +82,19 @@ https://liuzhian.github.io/2018/11/15/数据库-正规化/
 确保数据之间的依赖关系是合乎逻辑的：
   - 
 
+草稿：
+目的要將異常統整成資料冗余性、資料一致性、刪除時異常，其資料一致性無法完全包含刪除時異常或者類似的異常，所以區分開來
+資料完整性(包含資料一致性)
+
+
+integrity: 完整或者整體的程度，在這裏會以實物和預期實物之間的相同程度作為比較
+> the quality of being whole and complete
+
+data integrity：實際儲存的資料紀錄按照預先定義好的規則來紀錄，這裡預先定義好的規則是指資料庫管理系統對於資料的紀錄規則以及開發者自行定義好的紀錄規則，規則比如設定不允許已經紀錄好的紀錄出現欄位空值的情況
+> refers to the accuracy and consistency of data stored in a database, data warehouse, data mart or other construct
+> ensure data is recorded exactly as intended (such as a database correctly rejecting mutually exclusive possibilities)
+
+https://www.zhihu.com/topic/20025112/top-answers
 
 
 解決Data redundancy
