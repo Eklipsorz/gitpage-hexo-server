@@ -9,7 +9,7 @@ tags:
 1. Normalize 使某個事物回歸至它原本正常的狀態或者它常出現的狀態
 2. Normalization是指回歸至正常或者常態的過程/動作
 3. 前兩者提到的正規化所指的正常或者常出現的狀態會基於設定者來定義
-4. 在資料庫當中，為了避免當資料庫執行CRUD時所發生的異常-即資料冗余、資料不一致、刪除夾帶其他代表某事物之資訊的資料等，而定義出：
+4. 在資料庫當中，為了避免當資料庫執行CRUD時所發生的異常問題-即資料冗餘、資料不一致、刪除夾帶其他代表某事物之資訊的資料等，而定義出：
   - 哪一種表格形式可以讓資料庫系統避免上述問題的正規形式(Normal Form)
   - 如何從擁有異常現象的表格轉換為對應的正規形式，而這種轉換稱之為Normalizeation
 5. 由於完整正規形式所需要做的轉換處理成本過於沈重，而將完整正規形式依據處理成本以及嚴格性而分成第一正規化、第二正規化、第三正規化、BCNF、第四正規化、第五正規化、第六正規化等等正規化等級，在這裏普遍只會到第一至三正規化。
@@ -47,64 +47,49 @@ tags:
 https://liuzhian.github.io/2018/11/15/数据库-正规化/
 
 ## 總結：異常
-從對資料庫的紀錄所做出的CRUD操作衍生出的異常案例來看，可以大致將異常分成資料冗余(Data Redundancy)、資料本身的完整性異常(包含資料一致性、刪除metadata導致永久失去潛藏的紀錄)
+從對資料庫的紀錄所做出的CRUD操作衍生出的異常案例來看，可以大致將異常分成資料冗餘(Data Redundancy)、資料本身的完整性異常(包含資料一致性、刪除資料會導致永久失去另一個潛藏的資訊紀錄)
 
 ### Data Redundancy 
-資料冗餘是指資料紀錄本身的冗餘、重複情況，冗餘是指毫無意義的資料內容，而重複是指資料紀錄內容在其他紀錄內容是一樣的，在
-涉及到資料的資料庫中，常見的情況會有：
+資料冗餘是指資料紀錄本身的冗餘、重複情況，換言之，擁有資料冗余問題的資料，其內容本身是毫無意義(無法代表其資料本身、無法替資料庫管理系統進行額外處理等等)或者與其他資料紀錄內容是一樣的，在涉及到資料的資料庫中，常見的情況會有：
   - 在同一個表格下存在著多筆紀錄是重複的
   - 在同一個表格下有筆紀錄欄位是重複存在多個值。
   - 同個欄位重複出現在多個表格。
 > While different in nature, data redundancy also occurs in database systems that have values repeated unnecessarily in one or more records or fields, within a table, or where the field is replicated/repeated in two or more tables. 
 
-這項問題可能會帶來以下負面影響：
+這項問題可能會帶來以下負面影響，主要會依據毫無意義和重複再進一步推敲：
  - 資料上的不一致：相同資料在不同地方不能夠匹配到相同的結果
- - 多浪費資料的儲存空間去存放重複、冗余的資料：同一欄位儲存多個值、同一列儲存過多的欄位值(如拿欄位數量來儲存自己不喜歡的食物，而自己不喜歡的食物數是無限，所以欄位數勢必會是無限)、儲存無法匹配的冗余資訊
+ - 多浪費資料的儲存空間去存放重複、冗餘的資料：同一欄位儲存多個值、同一列儲存過多的欄位值、儲存無法匹配的冗餘資訊，前兩者如拿儲存無限多數量的資訊來在同一個欄位儲存或者同一列上的欄位數量來儲存，會使整個表格設計都要被迫以最大數量來定義每一個欄位能存多少以及欄位數量要多少，否則系統無法負荷，若以動態調整最大值則需要讓資料庫管理系統進行額外計算才能達成
 
-1. Redundant 中文為冗餘、多餘的，主要是強調某事物在某些場合是以非必要的形式重複出現
+Note: 
+1. Redundant 中文為冗餘、多餘的，主要是強調某事物在某些場合是以非必要的形式(重複)出現
 > Redundant：exceeding what is necessary or normal、characterized by similarity or repetition
 2. Redundancy 是指冗餘、多餘的程度/狀況，而Data Redundancy是指資料本身會出現的冗餘狀況，比如出現同一個場合出現重複或類似的資料。
 > Redundancy：The quality or state of being redundant
+3. 參考資料為
+- [Data Redundancy](https://en.wikipedia.org/wiki/Data_redundancy)
 
 
-4. Data Redundancy 會造成的缺失有：
-  - 浪費資料庫的儲存空間去存放重複性的資料
-  - 資料過於繁雜而產生資料維護上的問題
+### Data Integrity
+資料完整性(Data Integrity) 是指 **實際儲存的資料紀錄 與 按照預先定義好的規則而建立的資料紀錄 之間的相似性，越高就越一樣，同時代表著越完整**，換言之資料庫管理系統會使用預先定義好的規則來檢驗實際儲存的資料紀錄是否合法，而這裡預先定義好的規則是指資料庫管理系統對於資料的紀錄規則以及開發者自行定義好的紀錄規則，規則比如設定不允許已經紀錄好的紀錄出現欄位空值的情況、不允許儲存空欄位值的紀錄
+> refers to the accuracy and consistency of data stored in a database, data warehouse, data mart or other construct
+> ensure data is recorded exactly as intended (such as a database correctly rejecting mutually exclusive possibilities)
 
-## Data consistency
+若違背定義好的規則，那麼就即為資料完整性的異常，在這裡可能會有的異常會是：
+  - 已經儲存資料庫的紀錄出現欄位空值的現象：這使得該欄位無法被資料管理系統作為索引、其他應用的欄位，即為毫無意義
+  - 刪除資料可能會導致永久失去另一個潛藏的資訊紀錄：當對表格X的某份紀錄進行Delete操作時，若這份紀錄的部分欄位內容是能單獨定義某些事物Y(如能夠定義餐廳的欄位)，從定義事物Y來說的話，只要這些欄位隨著紀錄被刪除而刪去的話，那麼就無從定義事物Y
+
+Note: 
+1. integrity: 完整或者整體的程度，在這裏會以實物和預期實物之間的相同程度作為比較
+> the quality of being whole and complete
+2. 參考資料為
+- [数据完整性](https://zhuanlan.zhihu.com/p/345372629)
+- [Data integrity](https://en.wikipedia.org/wiki/Data_integrity)
+
+### Data consistency
 1. 意指相同資料在不同地方是否能夠匹配到相同的結果
 >  refers to whether the same data kept at different places do or do not match.
 2. 在關聯式資料庫中，是指同一個關係R上相同的屬性集合A是否能夠匹配相同對應的屬性集合B，若出現相同的屬性集合A匹配到不相同的對應屬性集合B，代表其Data consistency就很差，反之，若同一個關係R，每個紀錄都能透過相同的屬性集合A來對應相同的對應屬性集合B，代表Data consistency就很好
 3. Data consistency若太差的話，很容易在資料處理上的CRUD出現異常情況。
-
-
-异常（anomaly)
-确保数据之间的依赖关系是合乎逻辑的：
-  - 
-
-草稿：
-目的要將異常統整成資料冗余性、資料一致性、刪除時異常，其資料一致性無法完全包含刪除時異常或者類似的異常，所以區分開來
-資料完整性(包含資料一致性)
-
-
-integrity: 完整或者整體的程度，在這裏會以實物和預期實物之間的相同程度作為比較
-> the quality of being whole and complete
-
-data integrity：實際儲存的資料紀錄按照預先定義好的規則來紀錄，這裡預先定義好的規則是指資料庫管理系統對於資料的紀錄規則以及開發者自行定義好的紀錄規則，規則比如設定不允許已經紀錄好的紀錄出現欄位空值的情況
-> refers to the accuracy and consistency of data stored in a database, data warehouse, data mart or other construct
-> ensure data is recorded exactly as intended (such as a database correctly rejecting mutually exclusive possibilities)
-
-https://www.zhihu.com/topic/20025112/top-answers
-
-
-解決Data redundancy
-https://en.wikipedia.org/wiki/Data_redundancy
- 
-改善 data integrity
-
-https://en.wikipedia.org/wiki/Data_integrity
-
-使資料庫維護更容易
 
 
 
