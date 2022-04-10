@@ -100,12 +100,17 @@ A[RightEnd] = TmpArray[RightEnd];
 ### JavaScript：實現代碼
 
 ## 前置知識：Divide and Conquer
+當面對的問題無法一時之間解決或者過於龐大時，可以試著使用Divide and Conquer策略來設法解決，其概念有三個核心要點：
+  - 分解 (Divide)： 將原問題分解為數個規模較小、獨立、與原問題形式相同的子問題，對於原問題而言，這些子問題結合起來就構成其原本問題
+  > Divide the problem into a number of subproblems that are smaller instances of the same problem.
+  - 解決 (Conquer)： 通過遞迴式的分割來解決子問題，若切割至規模小到可以輕易解決時(如數個可能解只剩下只剩下一個)，就直接以回傳該解來解決
+  > Conquer the subproblems by solving them recursively. If they are small enough, solve the subproblems as base cases.
+  - 合併 (Combine)： 將各子問題的解合併為原問題(切割前的問題)的解
+  > Combine the solutions to the subproblems into the solution for the original problem.
 
-Divide the problem into a number of subproblems that are smaller instances of the same problem.
-Conquer the subproblems by solving them recursively. If they are small enough, solve the subproblems as base cases.
-Combine the solutions to the subproblems into the solution for the original problem.
-在每一層遞迴上都有三個步驟：
-分解：將原問題分解為若干個規模較小，相對獨立，與原問題形式相同的子問題。
-解決：若子問題規模較小且易於解決時，則直接解。否則，遞迴地解決各子問題。
-合併：將各子問題的解合併為原問題的解。
+舉一個例子，假設有個原始問題Problem過於龐大並不能直接解答，因此會將問題切割(Divide) **問題形式相同、獨立、較小的子問題Sub-Problem**，在這裡為了很好分辨哪個才是子問題以及原問題，所以使用Level來區分，Level 0 為最原始的問題，Level 1為Level 0問題所切割下來的子問題，但由於Level 1的子問題還是過於龐大，因而繼續切割成子問題而構成Level 2的子問題，這時的子問題已經輕易解決(Conquer)就直接回傳其解，Level 2的子問題就因而被解決，接著利用 **原問題是由子問題所構成的特性** 來將Level 2獲取到的解結合(Combine)成Level 1子問題的解，這時Level 1的子問題就因而被解決，最後再再將Level 1的解合併成Level 0問題的解，就能解決最原始的問題。
+![](https://res.cloudinary.com/dqfxgtyoi/image/upload/v1649582665/blog/algorithm/divide-and-conquer-progression_nzvkch.png)
+
+
+參考資料：
 [Divide-and-conquer](https://www.khanacademy.org/computing/computer-science/algorithms/merge-sort/a/divide-and-conquer-algorithms)
