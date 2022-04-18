@@ -1,15 +1,15 @@
 ---
-title: 探討：Cookie 本身和設定
+title: 筆記&探討：Cookie 本身和設定
 date: 2022-04-19 00:56:48
 tags:
   - Cookie
-categoires:
+categories:
   - Website Development
 ---
 
 由於http/https協議本身為了簡化客戶端和伺服器之間的連線結構，而定義客戶端和伺服器之間在連線時互動情況並不會紀錄下來-無狀態(stateless)，但隨著越來越多服務需要客戶端和伺服器之間的過去互動情況，比如首次登入後就直接透過互動情況而跳過、使用者可以透過過去的購物車內容來直接購買，就有人提出讓客戶端、伺服器根據情況來從自己的系統索要空間(記憶體或者硬碟)來**分別讓客戶端單方面紀錄與伺服器之間的互動情形、讓伺服器單方面紀錄與客戶端之間的互動情形、更或者讓兩者紀錄雙方的互動情形**。
 
-在這裡客戶端單方面與伺服器之間的互動情形紀錄會是稱作為cookie，而伺服器負責單方面與客戶端互動情況紀錄會是session，
+在這裡客戶端單方面與伺服器之間的互動情形紀錄會是稱作為cookie，而伺服器負責單方面與客戶端互動情況紀錄會是session，若兩者同時紀錄，那麼就會是雙方紀錄彼此的互動情形。
 
 ## cookie
 
@@ -33,6 +33,7 @@ Cookie: food=icecream; flavor=cheese;
 
 ## cookie存放在哪？
 會存放在記憶體或硬碟這兩個空間的其中之一，能夠決定cookie存放在至哪還是得依據每一種瀏覽器所做的實現，不過具體來說，主要會看伺服器對於cookie內容的有效期限是如何:
+
   - 時限若太短的話，會決定放在記憶體，並直到時間一到或者使用者關閉瀏覽器就即刻從記憶體刪除對應的cookie內容。
   - 時限若太長的話，會決定放在記憶體，直到使用者關閉瀏覽器就會將cookie內容以檔案形式轉存至硬碟，等到瀏覽器再一次向同一個伺服器發送請求時(或者每一次瀏覽器在一次被打開時)，就會先從硬碟中的cookie內容載入至記憶體，並利用其內容來與伺服器交流
 
@@ -60,6 +61,7 @@ Set-Cookie: food=icecream; flavor=cheese; Domain=xxxxx; Path=xxx
 ```
 
 總結，具體會是以Domain來指定隸屬於哪個伺服器，而Path則是指定Domain下的哪個路徑：
+
 1. Domain：實際標記cookie內容是隸屬於與哪個伺服器下進行互動交流，並且嚴格規範每一次客戶端要附加cookie內容會根據Domain所指定來附加。
 
 比如說伺服器設定cookie內容是與mozilla.org進行交流，那麼每一次客戶端向mozilla.org就會附加起士冰淇淋，若不是mozilla.org就不會附加
@@ -75,15 +77,26 @@ Domain 剩餘細節：
   ```
   - 若伺服器未設定Domain這設定值，就預設以當前伺服器的主機域名為主，但不會像前者那樣也讓subdomain也隸屬。
 
-2. Path：指定Domain下的哪個路徑，比如假設以下內容為Set-Cookie標頭內容，那麼
+2. Path：指定Domain下的哪個路徑，並且進一步比對發送請求的Domain和Path來找到對應cookie來附加至請求。
+
+
+比如假設以下內容為Set-Cookie標頭內容並發送至客戶端，請求它建立一個cookie內容並設定其cookie隸屬於mozilla.org下的/docs，
 ```
 Set-Cookie: food=icecream; flavor=cheese; Domain=mozilla.org Path=/docs
 ```
+當客戶端發送至向以下目標URI發送請求時，會檢查是否有Domain為mozilla.org且Path為/docs的cookie，若有的話就附加，在這裡會附加起士冰淇淋這cookie內容至請求，若沒有的話就不會附加至請求
 
-比如說
 ```
-Set-Cookie
+mozilla.org/docs
 ```
+  Path 剩餘細節：
+    - 若設定Path，其Path所包含的子路徑也會跟著被包含，以Path=/docs為例子，當使用者也向mozilla.org下的任一子路徑發送請求，也會跟著將mozilla.org且Path為/docs的cookie附加至請求。
+
+  ```
+    /docs
+    /docs/Web/
+    /docs/Web/HTTP
+  ```
 
 #### first-party cookie
 
@@ -143,18 +156,38 @@ Note:
 
 
 ### 安全設定
-主要option會有：
+安全有關的option主要涉及了cookie是否會被惡意濫用以及傳遞資訊中的cookie是否容易被攔截且容易被解讀，主要option會有：
 1. Secure: 要求客戶端只能在https加密協議下才能附加對應cookie給伺服器端，若是沒有就不附加，若有就附加cookie內容
+
 2. HttpOnly: 要求只能透過解析http封包本身的標頭才能讀取到cookie內容，除此之外的方法皆無法被存取，也不能透過JavaScript讀取，如透過Document.cookie來讀取和變更
 > Forbids JavaScript from accessing the cookie, for example, through the Document.cookie property
-3. SameSite：是否讓cookie遵從同源政策(當目前請求上的域名、路徑名、埠號是與cookie所歸屬的域名、路徑、埠號一致認同的話，就允許cookie加入至請求)，這是為了要求客戶端不能跨網域(Domain)來向指定網域發送請求之相關設定，也就是客戶端不能夠在非指定網域下發送請求，主要的選項有None、Strict、Lax，
+
+3. SameSite：是否讓cookie遵從同源政策(當目前請求上的域名、路徑名、埠號是與cookie所歸屬的域名、路徑、埠號一致認同的話，就允許cookie加入至請求)，這是為了要求客戶端不能跨網域(Domain)來向指定網域發送請求之相關設定，也就是客戶端不能夠在非指定網域下發送請求，主要的選項有None、Strict、Lax：
   None: 允許客戶端可以跨網域來向指定網域發送請求。
   Strict: 不允許客戶端可以跨網域來向指定網域發送請求。
   Lax: 如同字面上的意思，不會全然禁止客戶端跨網域向指定網域發送，而是只限定部分請求和元件，比如a元素的連接功能、get方法的表單。
 
 ### 留存客戶端多久
+留存客戶端多久有關的option主要涉及了cookie多久過期以及何時過期以減緩cookie被惡意使用的機率或者程度，主要option會有：
 
+1. Max-Age：主要以秒數為單位來指定還有多少時間會過期，若沒設定任何值，cookie會是以轉瞬即逝(瀏覽器關閉就消除)為主的session cookie，或者以Expires為主，；伺服器給定設定形式會是如下的Max-Age為主
+
+```
+Set-Cookie: <name>:<value>; Max-Age=<number>;
+```
+
+細節：
+  - 若Max-Age 被設定為0或者負值，會立即被當成過期cookie而被移除。
+  - 若Max-Age 和 Expires 這兩個設定值同時存在，會先以Max-Age為主。
+
+2. Expires：主要設定cookie的最大有效時間，若沒設定任何值，cookie會是以轉瞬即逝(瀏覽器關閉就消除)為主的session cookie；反之，設定值的話，就等同設定何時是cookie的最大有效期限，超過期限就即刻被移除，伺服器給定設定形式會是以Expires為主
+
+```
+Set-Cookie: <name>:<value>; Expires=<date>;
+```
 ## 參考資料
+[Cookies vs. LocalStorage: What’s the difference?](https://medium.com/swlh/cookies-vs-localstorage-whats-the-difference-d99f0eb09b44)
+[HTTP cookies](https://developer.mozilla.org/zh-TW/docs/Web/HTTP/Cookies)
 [一篇解释清楚Cookie是什么？](https://learn-anything.cn/http-cookie)
 [網站安全🔒 再探同源政策，談 SameSite 設定對 Cookie 的影響與注意事項](https://medium.com/程式猿吃香蕉/再探同源政策-談-samesite-設定對-cookie-的影響與注意事項-6195d10d4441)
 [广告是如何跟踪我们的？所有关于 cookie](https://juejin.cn/post/7052507369690890270)
