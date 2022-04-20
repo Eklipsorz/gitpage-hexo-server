@@ -7,9 +7,7 @@ categories:
   - Website Development
 ---
 
-鑑於 [探討：http/https協議上的 session 概念](/session-concept-in-rfc)所提到session存在目的，在這裡會使用基於RFC所提到session概念和如何用cookie實現session概念來描述，其中在這裡客戶端單方面與伺服器之間的互動情形紀錄會是稱作為cookie，而伺服器負責單方面與客戶端互動情況紀錄會是session，若兩者同時紀錄，那麼就會是雙方紀錄彼此的互動情形。
-
-此外，客戶端的cookie和伺服器的session皆為 實作session概念的產物，不過這裡只會探討到實作層面。
+鑑於 [探討：http/https協議上的 session 概念](/session-concept-in-rfc)所提到stateful session的概念，在這裡會基於概念的實現來說明cookie，此外，客戶端的cookie和伺服器的session皆為 **實作stateful session概念的產物**，不過這裡只會探討到實現層面。
 ## cookie
 
 客戶端的 cookie 是一塊用來記錄與伺服器的過去互動狀態的資料，會根據伺服器的回應是否帶有Set-Cookie才決定是否於客戶端建立cookie，若有的話，就建立；若沒有，就不建立。通常當伺服器想要客戶端儲存目前互動狀態時，伺服器會發送一個擁有Set-Cookie標頭(header)的封包給客戶端，其標頭內容會是以能夠代替這次的互動狀態，其內容形式會是如下(cookie-name和cookie-value即為這次的互動狀態)，客戶端一收到就會根據標頭內容來設置自己的cookie內容為cookie-name:cookie-value，
