@@ -38,26 +38,19 @@ meeting: a planned occasion when people come together to discuss something
 ## stateful session 具體實作
 在stateful session概念下，勢必得讓客戶端和伺服器都能夠儲存連線時的互動情況下才能運用，也就是客戶端單方面紀錄與伺服器連線時的互動狀態 和 伺服器單方面紀錄與客戶端連線時的互動狀態。
 
-具體實作方式為每一次只要客戶端X和伺服器Y之間建立連線，並且客戶端X向伺服器Y發送請求，那麼伺服器Y就會建立一個空間來準備儲存能夠代表著客戶端X和伺服器Y的session之資訊，然而這樣子的session只是伺服器單方面紀錄著與客戶端之間的互動狀態，還差了讓客戶端也單方面紀錄與伺服器之間的互動狀態
+具體實作方式為每一次只要客戶端Client和伺服器Server之間建立連線，且客戶端Client向伺服器Server發送請求，那麼伺服器Server就會為了該客戶端在同一個連線紀錄互動狀態而建立名為session物件來代表伺服器Server和客戶端Client之間連線時的互動要開始了，並準備儲存代表session(伺服器和客戶端之間在連線時的互動情形，不是指名為session的物件)的資訊
+![](https://res.cloudinary.com/dqfxgtyoi/image/upload/v1650439921/blog/network/session/building_a_session_ommsjq.png)
 
+接著伺服器就會回傳Set-Cookie標頭的封包，其標頭含著sessionId和name、value所構成的資訊內容，sessionId是用來告知客戶端哪一個伺服器session是紀錄著與客戶端Client連線時的互動狀態，好在未來方便伺服器和客戶端交換資訊，而資訊內容則是伺服器要求客戶端儲存的內容-即為讓客戶端單方面紀錄與伺服器連線的互動狀態，
+![](https://res.cloudinary.com/dqfxgtyoi/image/upload/v1650439921/blog/network/session/session_response_jybm8b.png)
 
-是讓客戶端和伺服器在每一次連線時可以各自從自己的系統中分配空間來儲存能夠代表與彼此進行連線時會有的互動情形之資料：
-  - 從客戶端單方面紀錄與伺服器之間的互動情形
-  - 從伺服器單方面紀錄與客戶端之間的互動情形
-  - 更或者讓兩者紀錄雙方的互動情形
+最後當客戶端收到之後就便建立Cookie物件來紀錄sessionId和對應資訊內容，往後若客戶端和伺服器都處於同個連線下，若發生互動交流的話(客戶端將產品放進購物車、使用者登入)，兩者皆透過Cookie物件和session物件來交換資訊來處理
+![](https://res.cloudinary.com/dqfxgtyoi/image/upload/v1650439922/blog/network/session/building_a_cookie_bujrln.png)
 
-並於下一次的session延續其結果來進行處理，比如說客戶端曾與某個電商伺服器進行連線並從中將產品放進購物車，但過程中客戶端先暫時關閉伺服器連線，而為了讓客戶端還能回憶起購物車的產品，伺服器會要求客戶端以Cookie形式來儲存著這產品的相關資訊，其內容會是產品的主要內容
-
-
-而具體實作方式則是允許客戶端和伺服器在每一次連線時可以各自從自己的系統中分配空間來儲存能夠代表與彼此進行連線時會有的互動情形之資料，而這樣的資料會是用session來稱呼，session 裡頭的內容則是稱之為session information，在下一次連線時，雙方可從session來延續過去的互動情形進行額外的處理，
-
-實作中的客戶端會以Cookie資訊來稱呼session以及透過伺服器所給定的Set-Cookie封包來建立紀錄，接著讓客戶端每次向著曾經請求的同個伺服器發送請求時就會跟著附加Cookie資訊至請求封包，以讓伺服器延續先前的處理結果為客戶端處理；而伺服器紀錄客戶端連線時的互動情形，通常會直接以session來命名
-
-
-總結：
-1. session 本就是概念，與在實際實現上，伺服器的session相比，session就只是描述如何實現它和它是什麼，而伺服器上的session就是依據著前者概念來建立出實體的session。
-2. session概念的存在意義是為了 **在不違反http無狀態下的環境能夠滿足伺服器和客戶端對於狀態的需求**
-3. 通常，session概念所對應的實現分別在伺服器和客戶端具有不同的名字：
+## 總結
+1. session 本就是以抽象概念來描述 **伺服器和客戶端之間在連線時的互動情形**，而 stateful session 則是利用 **將互動情形轉換以具體形式來描述情形，並讓每一個session都能擁有過去的session來進行處理**
+2. stateful session概念的存在意義是為了 **在不違反http無狀態下的環境能夠滿足伺服器和客戶端對於狀態的需求**
+3. 在實現stateful session概念下，客戶端和伺服器會有特定空間或者特定物件來儲存伺服器和客戶端之間在連線時的互動情形，這些空間或者物件都有對應名稱：
   - Cookie：屬於客戶端，是伺服器麻煩客戶端去紀錄與伺服器的互動狀態
   - session：屬於伺服器，是伺服器單方面紀錄與客戶端的互動狀態
 
